@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">baseAndroid</string>
+    <string name="title_activity_conteudo">ConteudoAct</string>
+</resources>
