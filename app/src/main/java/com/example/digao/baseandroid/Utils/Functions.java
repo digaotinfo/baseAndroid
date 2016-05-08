@@ -3,7 +3,6 @@ package com.example.digao.baseandroid.Utils;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
-import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -18,18 +17,10 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by digao on 04/05/16.
@@ -49,7 +40,7 @@ public class Functions {
                 new Response.Listener<String>() {
                     @Override
                     public String onResponse(String response) {
-                        File file = mContext.getFileStreamPath(jsonName+".json");
+                        File file = mContext.getFileStreamPath(jsonName);
                         if(file.exists()){
                             try {
                                 JSONObject fileLocal = new JSONObject( read(jsonName) );
@@ -88,7 +79,7 @@ public class Functions {
     public String read(String conteudo){
         String eol = System.getProperty("line.separator");
         String retorno;
-        try (BufferedReader input = new BufferedReader(new InputStreamReader(mContext.openFileInput(conteudo+".json")));){
+        try (BufferedReader input = new BufferedReader(new InputStreamReader(mContext.openFileInput(conteudo)))){
             String line;
             StringBuffer buffer = new StringBuffer();
             while ((line = input.readLine()) != null) {
@@ -102,24 +93,17 @@ public class Functions {
     }
 
 
-    public void writeFile(String response, String jsonName){
-        FileOutputStream outputStream = null;
-        File dir = new File(String.valueOf(mContext.getFileStreamPath("app")));
-        String fileName = jsonName+".json";
 
+
+    public void writeFile(String response, String jsonName){
         try {
             // Create temp file.
-//            File temp = File.createTempFile("TempFileName", ".tmp", mContext.getCacheDir());
-//            BufferedWriter out = new BufferedWriter(new FileWriter(temp));
-//            out.write(response);
-//            out.close();
+            File temp = File.createTempFile("TempFileName", ".tmp", mContext.getCacheDir());
+            BufferedWriter out = new BufferedWriter(new FileWriter(temp));
+            out.write(response);
+            out.close();
 
-            if( mContext.getFileStreamPath(fileName).exists() ){
-                mContext.getFileStreamPath(fileName).delete();
-            }
-            outputStream = mContext.openFileOutput( fileName, Context.MODE_PRIVATE);
-            outputStream.write(response.getBytes());
-            outputStream.close();
+            temp.renameTo( mContext.getFileStreamPath(jsonName.toString()) );
         } catch (IOException e) {
             // Handle exceptions here
         }
